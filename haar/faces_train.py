@@ -5,15 +5,14 @@ from PIL import Image
 import pickle
 
 
-
-cascPath = "haar/cascades/haarcascade_frontalface_default.xml"
-
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-image_dir = os.path.join(BASE_DIR,"..", "dataset")#sister folder path
+def faces_train():
+    cascPath = "haar/cascades/haarcascade_frontalface_default.xml"
 
 
-def train():
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    image_dir = os.path.join(BASE_DIR,"..", "dataset")#sister folder path
+
+
     faceCascade = cv2.CascadeClassifier(cascPath)
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
@@ -59,5 +58,3 @@ def train():
     recognizer.train(x_train, np.array(y_labels))
     recognizer.save("haar/trainer.yml")
     print("\n \"face-train.py\" successful")
-
-

@@ -6,11 +6,9 @@ import urllib.parse
 import urllib.error
 from bs4 import BeautifulSoup
 import ssl
-import json
 import cv2
 
 
-#######SCRAPER#################
 # scraper pulls data and shows the details on the screen
 class Insta_Info_Scraper:
 
@@ -37,74 +35,85 @@ class Insta_Info_Scraper:
     # Get info by doing a request. In this case we are using Instagram.
     # This is called everytime is a new face on the screen
     def getinfo(self, url, name):
-        print("getinfo error 1 = url is", url,"name is", name)
+        print("getinfo error 1 = url is", url, "name is", name)
         if name == "Unknown":
-        # add new info to the dictionary
+            # add new info to the dictionary
             info_instagram = {name: {'User': name,
-                                 'Followers': name,
-                                 'Following': name,
-                                 'Posts': name}}
+                                     'Followers': name,
+                                     'Following': name,
+                                     'Posts': name}}
             self.insta_dict.update(info_instagram)
             print('User: Unknown')
             print('---------------------------')
         else:
             html = urllib.request.urlopen(url, context=self.ctx).read()
-            print("getinfo error 2")
-            soup = BeautifulSoup(html, 'html.parser')
-            data = soup.find_all('meta', attrs={'property': 'og:description'
-                                            })
-            text = data[0].get('content').split()
-            user = '%s %s %s' % (text[-3], text[-2], text[-1])
-            followers = text[0]
-            following = text[2]
-            posts = text[4]
+            try:
+                # print("getinfo error 2")
+                soup = BeautifulSoup(html, 'html.parser')
+                data = soup.find_all('meta', attrs={'property': 'og:description'
+                                                    })
+                text = data[0].get('content').split()
+                user = '%s %s %s' % (text[-3], text[-2], text[-1])
+                followers = text[0]
+                following = text[2]
+                posts = text[4]
 
-            # add new info to the dictionary
-            info_instagram = {name: {'User': user,
-                                     'Followers': followers,
-                                     'Following': following,
-                                     'Posts': posts}}
+                # add new info to the dictionary
+                info_instagram = {name: {'User': user,
+                                         'Followers': followers,
+                                         'Following': following,
+                                         'Posts': posts}}
+                self.insta_dict.update(info_instagram)
 
-            self.insta_dict.update(info_instagram)
-
-            print('User:', user)
-            print('Followers:', followers)
-            print('Following:', following)
-            print('Posts:', posts)
-            print('---------------------------')
+                print('User:', user)
+                print('Followers:', followers)
+                print('Following:', following)
+                print('Posts:', posts)
+                print('---------------------------')
+            except:
+                pass
 
     # Set info about the user on the screen according to the face on it
-    def setTextScreen(self, frame, x, h, y, w, name):
+    def setTextScreen(self, frame, x, h, y, w, name, conf):
         # retrieves info from the dictionary according to the user
         dict_text = self.getinfo_dict(name)
         position = x - 15 if x - 15 > 15 else x + 15
-        cv2.rectangle(frame, (h, x), (y, w),self.color, 2)
+        if not conf:
+            cv2.rectangle(frame, (h, x), (y, w), self.color, 2)
 
         # cv2.putText(frame, name, (h, position), cv2.FONT_HERSHEY_SIMPLEX,0.75,self.color, 2)
-        cv2.putText(frame, 'User:' + dict_text['User'], (h, position-45), self.font, self.size, self.color, self.stroke)
-        cv2.putText(frame, 'Followers:' + dict_text['Followers'], (h, position-30), self.font, self.size, self.color, self.stroke)
-        cv2.putText(frame, 'Following:' + dict_text['Following'], (h, position-15), self.font, self.size, self.color, self.stroke)
+        cv2.putText(frame, 'User:' + dict_text['User'], (h, position - 45), self.font, self.size, self.color,
+                    self.stroke)
+        cv2.putText(frame, 'Followers:' + dict_text['Followers'], (h, position - 30), self.font, self.size, self.color,
+                    self.stroke)
+        cv2.putText(frame, 'Following:' + dict_text['Following'], (h, position - 15), self.font, self.size, self.color,
+                    self.stroke)
         cv2.putText(frame, 'Posts:' + dict_text['Posts'], (h, position), self.font, self.size, self.color, self.stroke)
-        
-    def main(self, frame, x, h, y, w, name):
+        if conf:
+            cv2.putText(frame, "Confidence" + str(round(conf)) + "%", (100, x), self.font, self.size, self.color,
+                        self.stroke,
+                        cv2.LINE_AA)
+
+    def main(self, frame, x, h, y, w, name, conf):
         # it verifies if the info to get is new
         val = self.check_info(name)
+        print("this is VAL"+str(val))
 
         if val is False:  # if the face is new get the info by doing a request
             self.ctx = ssl.create_default_context()
             self.ctx.check_hostname = False
             self.ctx.verify_mode = ssl.CERT_NONE
 
-            with open('hog/users.txt') as f:
+            with open('users.txt') as f:
                 self.content = f.readlines()
             self.content = [x.strip() for x in self.content]
             for url in self.content:
                 print("main error1")
                 self.getinfo(url, name)
                 print("main error2")
-                self.setTextScreen(frame, x, h, y, w, name)
+                self.setTextScreen(frame, x, h, y, w, name, conf)
         else:  # when the face is not new just get the info from the dictionary
-            self.setTextScreen(frame, x, h, y, w, name)
+            self.setTextScreen(frame, x, h, y, w, name, conf)
 
 
 if __name__ == '__main__':

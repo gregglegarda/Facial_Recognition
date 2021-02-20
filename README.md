@@ -1,8 +1,8 @@
 # Facial Recognition, Web Scraping, Dash and Plotly
 
-
-https://github.com/123porcristina
-https://gregglegarda.github.io/
+GITHUB LINKS:
+-https://github.com/123porcristina
+-https://gregglegarda.github.io/
 
 
 PACKAGE INSTALLATION REQUIREMENTS:
@@ -10,8 +10,8 @@ PACKAGE INSTALLATION REQUIREMENTS:
 - face_recognition
 - opencv
 - pillow
-- pickle
 - cmake
+- pickle
 - os
 - glib
 - requests
@@ -29,7 +29,7 @@ To visualize the application is necessary install core dash backend and DAQ comp
 
 FOLDERS OUTLINE AND FILE DESCRIPTIONS:
 
-- Main.py (Main file to run)
+- app.py (Main file to run. Has the HOG algorithm class)
 - README.md
 - assets
 - capture_image
@@ -41,27 +41,24 @@ FOLDERS OUTLINE AND FILE DESCRIPTIONS:
         - cascades (Contains a face cascade file used in haar face detection)
         - face_train.py (Trains the Haar cascade to recognize images from the dataset. Outputs "labels.pickle" and "trainer.yml")
         - faces.py (Runs the trained Haar video feed)
-        - Insta_Info_Scraper.py (Pulls and shows the instagram users information to be attached to the Haar video feed)
         - labels.pickle (labels IDs matching names and the corresponding images and saves it in trainer.yml)
         - trainer.yml (output of "labels.pickle" to be used as input when it runs "faces.py".)
         - users.txt (used by "Insta_Info_Scraper.py" to pull the instagram address of the user which is the name of the folder. This file is created by "faces.py" by reading the name of the folder which also has the instagram username )
 - hog
         - encode_faces.py (Trains the HOG algorithm to recognize images from the dataset. Outputs "encodings.pickle")
-        - encodings.pickle (contains the encoded/trained information of the faces used when the dataset is encoded/trained)
-        - hog.py (Runs the trained HOG video feed)
-        - Insta_Info_Scraper.py (Pulls and shows the instagram users information to be attached to the HOG video feed)
-        - users.txt (used by "Insta_Info_Scraper.py" to pull the instagram address of the user which is the name of the folder. This file is created by "hog.py" by reading the name of the folder which also has the instagram username )
 - saved_images (Contains images used for the  user interface.)
         - image_captured
         - stop_image.png
         - training_image.png
-
-
+- web_scraper
+        - Insta_Info_Scraper.py (Pulls and shows the instagram users information to be attached to the Haar and HOG video feed)
+ - encodings.pickle (contains the encoded/trained information of the faces used when the dataset is encoded/trained)
+ - users.txt (used by "Insta_Info_Scraper.py" to pull the instagram address of the user which is the name of the folder. This file is created by "app.py" in the HOG class by reading the name of the folder which also has the instagram username )
 
 STEPS TO RUN THE MODEL
 
 1. Download the packages required from the Package Installation Requirements section of this file.
-2. Run Main.py on the python shell or any desired text editor: 
+2. Run app.py on the python shell or any desired text editor: 
    - Run this file to get the https server (output shown below). 
    - Copy and paste the http address to a Chrome browser.
    - in this case ("http://127.0.0.1:8050/")
